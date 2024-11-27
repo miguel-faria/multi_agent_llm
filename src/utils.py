@@ -1,16 +1,10 @@
 #! /usr/bin/env python
-import re
 
-from torch.nn.functional import softmax
-from torch import Tensor
-from typing import Dict, List, Union, Tuple
 from vllm import SamplingParams
-from societies_agents.doc_mt.addition_agent import AdditionAgent
-from societies_agents.doc_mt.subtraction_agent import SubtractionAgent
-from societies_agents.doc_mt.critique_agent import CritiqueAgent
-from societies_agents.doc_mt.judgement_agent import JudgementAgent
-from pandas import DataFrame
-from tqdm import tqdm
+from addition_agent import AdditionAgent
+from subtraction_agent import SubtractionAgent
+from critique_agent import CritiqueAgent
+from judgement_agent import JudgementAgent
 
 
 def addition_by_subtraction(addition_agent: AdditionAgent, subtraction_agent: SubtractionAgent, init_context: str, instruction: str, max_iterations: int,
@@ -54,7 +48,7 @@ def trilateral_collab(act_agent: AdditionAgent, critique_agent: CritiqueAgent, j
 		history.append([answer, feedback])
 
 		if it > 1:
-			is_good_answer = judge_agent.generate(init_context, instruction, answer, gen_params)
+			is_good_answer = judge_agent.generate([init_context], gen_params, answer, instruction)
 			if is_good_answer:
 				break
 

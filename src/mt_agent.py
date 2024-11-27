@@ -1,12 +1,7 @@
 #! /usr/bin/env python
-import re
 
-from torch.nn.functional import softmax
-from torch import Tensor
-from typing import Dict, List, Union, Tuple
+from typing import Dict, List, Union
 from vllm import LLM, SamplingParams
-from pandas import DataFrame
-from tqdm import tqdm
 
 
 class MTAgent:
@@ -29,9 +24,13 @@ class MTAgent:
 	def gen_model(self) -> LLM:
 		return self._gen_model
 
-	def get_context(self, history: List[str], answer: str = ''):
+	def get_context(self, history: List[List[str]], answer: str = ''):
 		raise NotImplementedError("Method 'get_context' is not implemented in the base class, subclasses should implement it.")
 
-	def generate(self, history: List[str], params: SamplingParams) -> str:
-		raise NotImplementedError("Method 'generate' is not implemented in the base class, subclasses should implement it.")
+	def generate(self, history: List[List[str]], gen_params: SamplingParams) -> str:
+
+		generation_prompt = self.get_context(history)
+		outputs = self.gen_model.generate(generation_prompt, sampling_params=gen_params)
+
+		return outputs[0].outputs[0].text
 
